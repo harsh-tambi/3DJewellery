@@ -52,12 +52,12 @@ class JewelryGenerator:
         """Generate ring geometry with customizable parameters"""
         print("[_generate_ring] Called with prompt_data:", prompt_data)
         try:
-            # Extract ring-specific parameters
-            band_width = prompt_data.get("band_width") or 3.0
-            band_thickness = prompt_data.get("band_thickness") or 1.5
-            ring_size = prompt_data.get("ring_size") or 18.0  # US ring size
-            stone_count = prompt_data.get("stone_count") if prompt_data.get("stone_count") is not None else 1
-            stone_size = prompt_data.get("stone_size") or 2.0
+            # Extract ring-specific parameters with proper type conversion
+            band_width = float(prompt_data.get("band_width") or 3.0)
+            band_thickness = float(prompt_data.get("band_thickness") or 1.5)
+            ring_size = float(prompt_data.get("ring_size") or 18.0)  # US ring size
+            stone_count = int(prompt_data.get("stone_count", 1))
+            stone_size = float(prompt_data.get("stone_size") or 2.0)
             print(f"[_generate_ring] band_width={band_width}, band_thickness={band_thickness}, ring_size={ring_size}, stone_count={stone_count}, stone_size={stone_size}")
             # Convert ring size to diameter (mm)
             diameter = self._ring_size_to_diameter(ring_size)
@@ -113,15 +113,15 @@ class JewelryGenerator:
     async def _generate_necklace(self, prompt_data: Dict[str, Any]) -> Dict[str, Any]:
         """Generate necklace geometry"""
         
-        chain_length = prompt_data.get("chain_length", 450)  # mm
-        pendant_size = prompt_data.get("pendant_size", 15.0)
+        chain_length = float(prompt_data.get("chain_length", 450))  # mm
+        pendant_size = float(prompt_data.get("pendant_size", 15.0))
         chain_style = prompt_data.get("chain_style", "cable")
         
         # Create chain links
         chain_geometry = self._create_chain(
             length=chain_length,
             style=chain_style,
-            link_size=prompt_data.get("link_size", 3.0)
+            link_size=float(prompt_data.get("link_size", 3.0))
         )
         
         # Create pendant
@@ -145,7 +145,7 @@ class JewelryGenerator:
         """Generate earring geometry"""
         
         earring_type = prompt_data.get("earring_type", "stud")
-        size = prompt_data.get("size", 8.0)
+        size = float(prompt_data.get("size", 8.0))
         
         if earring_type == "stud":
             geometry = self._create_stud_earring(size)
@@ -166,7 +166,7 @@ class JewelryGenerator:
     async def _generate_bracelet(self, prompt_data: Dict[str, Any]) -> Dict[str, Any]:
         """Generate bracelet geometry"""
         
-        wrist_size = prompt_data.get("wrist_size", 170)  # mm
+        wrist_size = float(prompt_data.get("wrist_size", 170))  # mm
         bracelet_style = prompt_data.get("bracelet_style", "chain")
         
         if bracelet_style == "chain":

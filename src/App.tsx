@@ -5,17 +5,15 @@ import JewelryViewer from './components/JewelryViewer'
 import ControlPanel from './components/ControlPanel'
 import PromptInput from './components/PromptInput'
 import LoadingSpinner from './components/LoadingSpinner'
+import ModelDownload from './components/ModelDownload'
 import { JewelryModel } from './types/jewelry'
 import { generateJewelry, createParametricJewelry } from './services/api'
-import { downloadSTL } from './services/api'
 
 function App() {
   const [currentModel, setCurrentModel] = useState<JewelryModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'ai' | 'parametric'>('ai')
-  // Import STL download function
-  // @ts-ignore
 
 
   const handleGenerateJewelry = async (prompt: string, options: any) => {
@@ -124,13 +122,11 @@ function App() {
                   </div>
                 )}
               </div>
-              {/* Download STL Button */}
-              <button
-                className="mt-6 w-full generate-button text-white py-3 px-6 rounded-lg font-medium"
-                onClick={() => downloadSTL(currentModel.metadata?.prompt || '', currentModel.metadata)}
-              >
-                Download 3D Model (STL)
-              </button>
+              {/* Download Model Buttons */}
+              <ModelDownload 
+                model={currentModel} 
+                className="mt-6"
+              />
             </div>
           </div>
         )}

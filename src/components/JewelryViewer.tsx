@@ -10,13 +10,15 @@ interface JewelryViewerProps {
 const JewelryViewer: React.FC<JewelryViewerProps> = ({ model }) => {
   const { geometry, metadata } = model
 
-  // Check for geometry validity
-  const isGeometryValid = geometry && (
-    (geometry.band && Array.isArray(geometry.band.vertices) && geometry.band.vertices.length > 0) ||
-    (geometry.chain && Array.isArray(geometry.chain.vertices) && geometry.chain.vertices.length > 0) ||
-    (geometry.pendant && Array.isArray(geometry.pendant.vertices) && geometry.pendant.vertices.length > 0) ||
-    (geometry.post && Array.isArray(geometry.post.vertices) && geometry.post.vertices.length > 0) ||
-    (geometry.setting && Array.isArray(geometry.setting.vertices) && geometry.setting.vertices.length > 0)
+  // Check for geometry validity - handle the actual backend structure
+  const jewelryData = geometry as any // Cast to any to handle backend structure
+  
+  const isGeometryValid = jewelryData && (
+    (jewelryData.band && Array.isArray(jewelryData.band.vertices) && jewelryData.band.vertices.length > 0) ||
+    (jewelryData.chain && Array.isArray(jewelryData.chain.vertices) && jewelryData.chain.vertices.length > 0) ||
+    (jewelryData.pendant && Array.isArray(jewelryData.pendant.vertices) && jewelryData.pendant.vertices.length > 0) ||
+    (jewelryData.post && Array.isArray(jewelryData.post.vertices) && jewelryData.post.vertices.length > 0) ||
+    (jewelryData.setting && Array.isArray(jewelryData.setting.vertices) && jewelryData.setting.vertices.length > 0)
   )
 
   // Create materials based on jewelry type and material
@@ -55,7 +57,7 @@ const JewelryViewer: React.FC<JewelryViewerProps> = ({ model }) => {
 
   // Create stone material
   const stoneMaterial = useMemo(() => {
-    const stoneType = geometry.parameters?.stone_type || 'diamond'
+    const stoneType = jewelryData?.parameters?.stone_type || 'diamond'
     
     const stoneMaterialMap = {
       diamond: new THREE.MeshStandardMaterial({
@@ -87,7 +89,7 @@ const JewelryViewer: React.FC<JewelryViewerProps> = ({ model }) => {
     }
     
     return stoneMaterialMap[stoneType as keyof typeof stoneMaterialMap] || stoneMaterialMap.diamond
-  }, [geometry.parameters?.stone_type])
+  }, [jewelryData?.parameters?.stone_type])
 
   // Create geometry from vertices and indices
   const createGeometry = (vertices: number[], indices: number[]) => {
@@ -109,7 +111,7 @@ const JewelryViewer: React.FC<JewelryViewerProps> = ({ model }) => {
   }
 
   // Render jewelry components
-  const renderJewelryComponent = (component: any, material: THREE.Material, position = [0, 0, 0]) => {
+  const renderJewelryComponent = (component: any, material: THREE.Material, position: [number, number, number] = [0, 0, 0]) => {
     if (!component || !component.vertices) return null
     
     const geometry = createGeometry(component.vertices, component.indices)
@@ -135,8 +137,8 @@ const JewelryViewer: React.FC<JewelryViewerProps> = ({ model }) => {
       case 'ring':
         return (
           <group>
-            {geometry.band && renderJewelryComponent(geometry.band, materials)}
-            {geometry.stones && geometry.stones.map((stone: any, index: number) => (
+            {jewelryData.band && renderJewelryComponent(jewelryData.band, materials)}
+            {jewelryData.stones && jewelryData.stones.map((stone: any, index: number) => (
               <mesh
                 key={index}
                 geometry={createGeometry(stone.vertices, stone.indices)}
@@ -148,21 +150,21 @@ const JewelryViewer: React.FC<JewelryViewerProps> = ({ model }) => {
       case 'necklace':
         return (
           <group>
-            {geometry.chain && renderJewelryComponent(geometry.chain, materials)}
-            {geometry.pendant && renderJewelryComponent(geometry.pendant, materials, [0, -2, 0])}
+            {jewelryData.chain && renderJewelryComponent(jewelryData.chain, materials)}
+            {jewelryData.pendant && renderJewelryComponent(jewelryData.pendant, materials, [0, -2, 0])}
           </group>
         )
       case 'earrings':
         return (
           <group>
-            {geometry.post && renderJewelryComponent(geometry.post, materials)}
-            {geometry.setting && renderJewelryComponent(geometry.setting, materials)}
+            {jewelryData.post && renderJewelryComponent(jewelryData.post, materials)}
+            {jewelryData.setting && renderJewelryComponent(jewelryData.setting, materials)}
           </group>
         )
       case 'bracelet':
         return (
           <group>
-            {geometry.band && renderJewelryComponent(geometry.band, materials)}
+            {jewelryData.band && renderJewelryComponent(jewelryData.band, materials)}
           </group>
         )
       default:

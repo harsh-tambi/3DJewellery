@@ -25,7 +25,19 @@ export const generateJewelry = async (
     })
     
     if (response.data.success) {
-      return response.data.model_data
+      // Transform backend response to expected frontend format
+      const backendData = response.data.model_data
+      
+      return {
+        geometry: backendData.geometry || backendData, // Handle both formats
+        metadata: backendData.metadata || {
+          jewelry_type: options.jewelry_type || 'ring',
+          style: options.style || 'modern',
+          material: options.material || 'gold',
+          complexity: options.complexity || 'medium',
+          prompt: prompt
+        }
+      }
     } else {
       // Show backend error message if available
       throw new Error(response.data.error || 'Failed to generate jewelry')
@@ -49,7 +61,18 @@ export const createParametricJewelry = async (
     })
     
     if (response.data.success) {
-      return response.data.model_data
+      // Transform backend response to expected frontend format
+      const backendData = response.data.model_data
+      
+      return {
+        geometry: backendData.geometry || backendData, // Handle both formats
+        metadata: backendData.metadata || {
+          jewelry_type: jewelry_type,
+          style: 'parametric',
+          material: parameters.material || 'gold',
+          complexity: 'medium'
+        }
+      }
     } else {
       throw new Error('Failed to create parametric jewelry')
     }

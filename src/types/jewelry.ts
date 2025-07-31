@@ -5,8 +5,8 @@ export interface JewelryModel {
 
 export interface JewelryGeometry {
   type: string
-  vertices: number[]
-  indices: number[]
+  vertices?: number[]
+  indices?: number[]
   band?: JewelryGeometry
   stones?: JewelryGeometry[]
   chain?: JewelryGeometry
